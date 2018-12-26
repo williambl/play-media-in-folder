@@ -8,8 +8,17 @@ inotifywait -m "$QUEUE_FOLDER" -e create -e moved_to --format '%f' |
     while read FILE; do
         echo Enqueueing $FILE
 
-        mv "$QUEUE_FOLDER/$FILE" "$PLAYED_FOLDER/$FILE"
-        vlc --one-instance --playlist-enqueue "$PLAYED_FOLDER/$FILE"
+        FILEEXT=${FILE##*.}
+        echo $FILEEXT
+
+        if [[ $FILEEXT = "youtube" ]]
+        then
+            rm "$QUEUE_FOLDER/$FILE"
+            vlc --one-instance --playlist-enqueue "https://youtube.com/watch?v=`basename $FILE`"
+        else
+            mv "$QUEUE_FOLDER/$FILE" "$PLAYED_FOLDER/$FILE"
+            vlc --one-instance --playlist-enqueue "$PLAYED_FOLDER/$FILE"
+        fi
 
         if [[ ! $(qdbus org.mpris.MediaPlayer2.vlc /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.PlaybackStatus) = "Playing" ]]; then
             dbus-send --type=method_call --dest=org.mpris.MediaPlayer2.vlc /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.PlayPause
