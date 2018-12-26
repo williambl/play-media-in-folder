@@ -18,7 +18,7 @@ function play_yt_with_vlc {
 }
 
 function play_yt_with_youtubedl {
-    youtube-dl "https://youtube.com/watch?v=$1" -f bestvideo+bestaudio/mkv -o "$PLAYED_FOLDER/$1"
+    youtube-dl "https://youtube.com/watch?v=$1" --merge-output-format mkv -o "$PLAYED_FOLDER/$1"
     vlc --one-instance --playlist-enqueue "$PLAYED_FOLDER/$1.mkv"
 }
 
